@@ -1,0 +1,77 @@
+@using Microsoft.AspNetCore.Antiforgery
+@inject IAntiforgery Antiforgery
+@{
+    var token = Antiforgery.GetAndStoreTokens(Context).RequestToken;
+    var role = User.IsInRole("Admin") ? "Admin" : User.IsInRole("Developer") ? "Developer" : "Viewer";
+    var ctl = ViewContext.RouteData.Values["controller"]?.ToString();
+    string Active(string c) => string.Equals(ctl, c, StringComparison.OrdinalIgnoreCase) ? "active" : "";
+    var wide = ViewData["Wide"] as bool? == true;
+}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="csrf" content="@token" />
+    <title>@(ViewData["Title"] ?? "Dashboard") · KTC API Explorer</title>
+    <script src="~/js/theme-init.js"></script>
+    <link rel="stylesheet" href="~/lib/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap-icons/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body class="@(wide ? "page-wide" : "")">
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <nav class="navbar navbar-expand-lg app-nav fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-semibold" asp-controller="Home" asp-action="Index"><i class="bi bi-diagram-3-fill me-1"></i>KTC API Explorer</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="nav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link @Active("Home")" asp-controller="Home" asp-action="Index"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link @Active("Explorer")" asp-controller="Explorer" asp-action="Index"><i class="bi bi-braces"></i> Explorer</a></li>
+                    <li class="nav-item"><a class="nav-link @Active("Library")" asp-controller="Library" asp-action="Index"><i class="bi bi-bookmark-star"></i> Library</a></li>
+                    <li class="nav-item"><a class="nav-link @Active("History")" asp-controller="History" asp-action="Index"><i class="bi bi-clock-history"></i> History</a></li>
+                    <li class="nav-item"><a class="nav-link @Active("Monitoring")" asp-controller="Monitoring" asp-action="Index"><i class="bi bi-activity"></i> Monitoring</a></li>
+                    @if (role == "Admin")
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle @Active("Collections")@Active("Admin")" href="#" data-bs-toggle="dropdown"><i class="bi bi-gear"></i> Admin</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Collections" asp-action="Index"><i class="bi bi-upload"></i> Collections / Import</a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Users"><i class="bi bi-people"></i> Users</a></li>
+                                <li><a class="dropdown-item" asp-controller="Admin" asp-action="Audit"><i class="bi bi-journal-text"></i> Audit log</a></li>
+                            </ul>
+                        </li>
+                    }
+                </ul>
+                <div class="d-flex align-items-center gap-2">
+                    <a asp-controller="Ktc" asp-action="Login" id="ktcBadge" class="badge rounded-pill ktc-badge ktc-none" title="KTC API session">
+                        <i class="bi bi-shield-lock"></i> <span id="ktcBadgeText">KTC: not signed in</span>
+                    </a>
+                    <button class="btn btn-sm btn-outline-secondary" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode"><i class="bi bi-moon-stars"></i></button>
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown"><i class="bi bi-person-circle"></i> @User.Identity!.Name <span class="badge text-bg-secondary">@role</span></button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <form asp-controller="Account" asp-action="Logout" method="post"><button class="dropdown-item" type="submit"><i class="bi bi-box-arrow-right"></i> Sign out</button></form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+}
+<main class="@(wide ? "container-fluid px-2" : "container-xxl") app-main">
+    @if (TempData["Success"] is string ok) { <div class="alert alert-success alert-dismissible fade show" role="alert">@ok<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div> }
+    @if (TempData["Error"] is string err) { <div class="alert alert-danger alert-dismissible fade show" role="alert">@err<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div> }
+    @RenderBody()
+</main>
+<div class="toast-container position-fixed bottom-0 end-0 p-3" id="toasts"></div>
+<script src="~/lib/jquery/jquery.min.js"></script>
+<script src="~/lib/bootstrap/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,10 @@
+@{ ViewData["Title"] = "Monitoring"; }
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <div><h1 class="h4 mb-0">API health &amp; monitoring</h1><div class="small text-body-secondary">Read-only (GET/HEAD) endpoints flagged <b>Monitor</b> in the Explorer. Uses your current KTC session. Stats cover the last 24 h.</div></div>
+  @if (User.IsInRole("Admin") || User.IsInRole("Developer")) { <button class="btn btn-primary" id="btnRun"><i class="bi bi-heart-pulse"></i> Run health check</button> }
+</div>
+<div class="card mb-3"><div class="table-responsive"><table class="table table-sm align-middle mb-0">
+  <thead><tr><th>Status</th><th>API</th><th>Last status</th><th class="text-end">Last</th><th class="text-end">Avg 24h</th><th class="text-end">Samples</th><th class="text-end">Failures</th><th>Checked</th></tr></thead>
+  <tbody id="rows"><tr><td colspan="8" class="text-center py-4 text-body-secondary">Loading…</td></tr></tbody></table></div></div>
+<div class="card"><div class="card-header">Error trend and response time (14 days, all executions)</div><div class="card-body"><div class="chart-box"><canvas id="errChart" aria-label="Error trend"></canvas></div></div></div>
+@section Scripts { <script src="~/lib/chartjs/chart.umd.js"></script><script src="~/js/monitoring.js" asp-append-version="true"></script> }

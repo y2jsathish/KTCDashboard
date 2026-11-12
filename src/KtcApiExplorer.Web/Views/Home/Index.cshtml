@@ -1,0 +1,19 @@
+@{ ViewData["Title"] = "Dashboard"; }
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div><h1 class="h4 mb-0">Dashboard</h1><div class="text-body-secondary small">API inventory and usage over the last 30 days</div></div>
+  <a class="btn btn-primary" asp-controller="Explorer" asp-action="Index"><i class="bi bi-braces"></i> Open Explorer</a>
+</div>
+<div class="row g-3 mb-3" id="stats">
+  <div class="col-6 col-md"><div class="card stat-card"><div class="card-body py-2"><div class="text-body-secondary small">Total APIs</div><div class="num" data-k="totalApis">–</div></div></div></div>
+  <div class="col-6 col-md"><div class="card stat-card stat-get"><div class="card-body py-2"><div class="text-body-secondary small">GET</div><div class="num" data-k="getApis">–</div></div></div></div>
+  <div class="col-6 col-md"><div class="card stat-card stat-post"><div class="card-body py-2"><div class="text-body-secondary small">POST</div><div class="num" data-k="postApis">–</div></div></div></div>
+  <div class="col-6 col-md"><div class="card stat-card stat-put"><div class="card-body py-2"><div class="text-body-secondary small">PUT</div><div class="num" data-k="putApis">–</div></div></div></div>
+  <div class="col-6 col-md"><div class="card stat-card stat-delete"><div class="card-body py-2"><div class="text-body-secondary small">DELETE</div><div class="num" data-k="deleteApis">–</div></div></div></div>
+</div>
+<div id="noData" class="alert alert-info d-none">No collection has been imported yet. @if (User.IsInRole("Admin")) { <a asp-controller="Collections" asp-action="Index">Import a Postman collection</a> } else { <span>Ask an administrator to import one.</span> }</div>
+<div class="row g-3">
+  <div class="col-lg-7"><div class="card h-100"><div class="card-header">Usage by API (top 10)</div><div class="card-body"><div class="chart-box"><canvas id="usageChart" aria-label="Usage by API"></canvas></div><div class="empty-hint d-none" id="usageEmpty">No executions yet.</div></div></div></div>
+  <div class="col-lg-5"><div class="card h-100"><div class="card-header">Success vs failure</div><div class="card-body"><div class="chart-box"><canvas id="ratioChart" aria-label="Success versus failure"></canvas></div></div></div></div>
+  <div class="col-12"><div class="card"><div class="card-header">Response time trend (avg ms) and failures per day</div><div class="card-body"><div class="chart-box"><canvas id="trendChart" aria-label="Response time trend"></canvas></div></div></div></div>
+</div>
+@section Scripts { <script src="~/lib/chartjs/chart.umd.js"></script><script src="~/js/dashboard.js" asp-append-version="true"></script> }

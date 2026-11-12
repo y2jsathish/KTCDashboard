@@ -1,0 +1,27 @@
+@model KtcLoginViewModel
+@{ ViewData["Title"] = "KTC sign in"; }
+<div class="row g-4 justify-content-center">
+  <div class="col-lg-5">
+    <h1 class="h4">KTC API sign in</h1>
+    <p class="text-body-secondary">Calls <code>POST api/v1/Login</code> on the selected KTC environment and keeps the returned <code>access_token</code> / <code>ktc_access_token</code> on the server (encrypted session) - they are never sent to your browser.</p>
+    @if (!Model.Collections.Any()) { <div class="alert alert-warning">No collection is available yet. An administrator needs to import the Postman collection first.</div> }
+    <form id="ktcForm" class="card card-body shadow-sm" autocomplete="off">
+      <div class="mb-3"><label class="form-label">Environment (collection)</label>
+        <select class="form-select" id="collectionId">@foreach (var c in Model.Collections) { <option value="@c.Id" selected="@(Model.Status.CollectionId == c.Id)">@c.Name - @c.BaseUrl</option> }</select></div>
+      <div class="mb-3"><label class="form-label">Username</label><input class="form-control" id="username" placeholder="DOMAIN\user" required /></div>
+      <div class="mb-3"><label class="form-label">Password</label><input class="form-control" id="password" type="password" autocomplete="new-password" required /></div>
+      <div class="row">
+        <div class="col-6 mb-3"><label class="form-label">AppName</label><input class="form-control" id="appName" value="KTC_UI" required /></div>
+        <div class="col-6 mb-3"><label class="form-label">AuthMode</label><input class="form-control" id="authMode" value="DOMAIN" list="authModes" required /><datalist id="authModes"><option value="DOMAIN"></option></datalist></div>
+      </div>
+      <div class="mb-3"><label class="form-label">Plugin name <span class="text-body-secondary">(optional)</span></label><input class="form-control" id="pluginName" /></div>
+      <button class="btn btn-primary" id="signIn" type="submit" disabled="@(!Model.Collections.Any())"><i class="bi bi-box-arrow-in-right"></i> Sign in to KTC</button>
+      <div class="text-danger small mt-2" id="ktcError" role="alert"></div>
+    </form>
+  </div>
+  <div class="col-lg-4">
+    <div class="card"><div class="card-header">Session</div><div class="card-body" id="sessionPanel"><div class="text-body-secondary">Loading…</div></div></div>
+    <div class="alert alert-secondary mt-3 small mb-0"><i class="bi bi-info-circle"></i> The token is renewed automatically shortly before it expires (using <code>Relogin</code>, falling back to <code>Login</code>) as long as <code>Ktc:StoreCredentialsForRefresh</code> is on.</div>
+  </div>
+</div>
+@section Scripts { <script src="~/js/ktc-login.js" asp-append-version="true"></script> }

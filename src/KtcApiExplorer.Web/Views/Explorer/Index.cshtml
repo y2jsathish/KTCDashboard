@@ -1,0 +1,28 @@
+@{ ViewData["Title"] = "API Explorer"; ViewData["Wide"] = true; var role = User.IsInRole("Admin") ? "Admin" : User.IsInRole("Developer") ? "Developer" : "Viewer"; }
+<div class="explorer" id="explorer" data-role="@role">
+  <div class="explorer-top">
+    <select id="collectionSel" class="form-select form-select-sm" style="max-width:230px" aria-label="Collection"></select>
+    <div class="input-group input-group-sm search"><span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input id="q" class="form-control" placeholder="Search APIs by route or description…  ( / )" autocomplete="off" aria-label="Search APIs" />
+      <button class="btn btn-outline-secondary" id="clearQ" title="Clear filters"><i class="bi bi-x-lg"></i></button></div>
+    <div class="btn-group btn-group-sm" id="methodFilter" role="group" aria-label="Filter by method">
+      <button class="btn btn-outline-secondary active" data-m="">All</button><button class="btn btn-outline-secondary" data-m="GET">GET</button><button class="btn btn-outline-secondary" data-m="POST">POST</button>
+      <button class="btn btn-outline-secondary" data-m="PUT">PUT</button><button class="btn btn-outline-secondary" data-m="DELETE">DELETE</button></div>
+    <select id="folderFilter" class="form-select form-select-sm" style="max-width:220px" aria-label="Filter by folder"><option value="">All folders</option></select>
+    <div class="btn-group btn-group-sm" id="scope" role="group" aria-label="Scope">
+      <button class="btn btn-outline-secondary active" data-s="all">All</button><button class="btn btn-outline-secondary" data-s="fav"><i class="bi bi-star-fill"></i> Favorites</button><button class="btn btn-outline-secondary" data-s="recent"><i class="bi bi-clock-history"></i> Recent</button></div>
+  </div>
+  <div class="explorer-body">
+    <aside class="pane" id="treePane"><div class="pane-head"><span class="title"><i class="bi bi-folder2-open"></i> Folders <span class="badge text-bg-secondary" id="treeCount"></span></span>
+      <button class="btn btn-sm btn-link p-0 collapse-btn" data-target="treePane" title="Collapse panel" aria-label="Collapse folders"><i class="bi bi-layout-sidebar-inset"></i></button></div>
+      <div class="pane-body" id="tree"><div class="empty-hint">Loading…</div></div></aside>
+    <section class="pane" id="editorPane"><div class="pane-head"><span class="title"><i class="bi bi-pencil-square"></i> Request</span>
+      <button class="btn btn-sm btn-link p-0 collapse-btn" data-target="editorPane" title="Collapse panel" aria-label="Collapse request"><i class="bi bi-arrows-collapse-vertical"></i></button></div>
+      <div class="pane-body" id="editor"><div class="empty-hint"><i class="bi bi-arrow-left-circle fs-3"></i><br />Select an API from the tree to begin.</div></div></section>
+    <section class="pane" id="responsePane"><div class="pane-head"><span class="title"><i class="bi bi-reply"></i> Response</span>
+      <button class="btn btn-sm btn-link p-0 collapse-btn" data-target="responsePane" title="Collapse panel" aria-label="Collapse response"><i class="bi bi-layout-sidebar-inset-reverse"></i></button></div>
+      <div class="pane-body" id="response"><div class="empty-hint">Execute a request to see the response.</div></div></section>
+  </div>
+</div>
+<partial name="_DiffModal" />
+@section Scripts { <script src="~/js/explorer.js" asp-append-version="true"></script> }

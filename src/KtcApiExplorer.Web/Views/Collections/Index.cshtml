@@ -1,0 +1,40 @@
+@model CollectionsViewModel
+@{ ViewData["Title"] = "Collections"; }
+<h1 class="h4">Collections &amp; import</h1>
+<div class="row g-4">
+  <div class="col-lg-5">
+    <div class="card"><div class="card-header">Import Postman collection (v2.1)</div><div class="card-body">
+      <form asp-action="Import" method="post" enctype="multipart/form-data">
+        <div class="mb-3"><label class="form-label">Collection JSON <span class="text-danger">*</span></label><input class="form-control" type="file" name="CollectionFile" accept=".json,application/json" required /></div>
+        <div class="mb-3"><label class="form-label">KTC help documentation (HTML) <span class="text-body-secondary">optional</span></label><input class="form-control" type="file" name="HelpFile" accept=".html,.htm" />
+          <div class="form-text">The KTC REST API help page. Adds the real controller grouping and a description to each endpoint (the Postman export has neither).</div></div>
+        <div class="mb-3"><label class="form-label">Base URL of the KTC REST API</label><input class="form-control" name="BaseUrl" placeholder="https://ktc-server/KTCRESTAPI" />
+          <div class="form-text">The Postman file contains no host. Leave empty to use the configured default; you can change it later.</div></div>
+        <div class="mb-3"><label class="form-label">Collection name <span class="text-body-secondary">optional</span></label><input class="form-control" name="CollectionName" />
+          <div class="form-text">Importing an existing name updates it in place - favourites, templates and history are preserved.</div></div>
+        <button class="btn btn-primary" type="submit"><i class="bi bi-upload"></i> Import</button>
+      </form></div></div>
+    @if (Model.LastImport is { } r)
+    {
+      <div class="card mt-3"><div class="card-header">Last import: @r.CollectionName @(r.Updated ? "(updated)" : "(new)")</div><div class="card-body small">
+        <div>@r.Endpoints endpoints · @r.Folders folders · +@r.Added new · ~@r.Changed changed · -@r.Deactivated removed · @r.DescriptionsFromHelpDoc descriptions from help doc</div>
+        @if (r.Warnings.Any()) { <ul class="mt-2 mb-0 text-warning-emphasis">@foreach (var w in r.Warnings.Take(20)) { <li>@w</li> }@if (r.Warnings.Count > 20) { <li>…and @(r.Warnings.Count - 20) more</li> }</ul> }
+      </div></div>
+    }
+  </div>
+  <div class="col-lg-7">
+    <div class="card"><div class="card-header">Imported collections</div>
+      <div class="table-responsive"><table class="table table-sm align-middle mb-0">
+        <thead><tr><th>Name</th><th>Base URL</th><th class="text-end">Endpoints</th><th class="text-end">Folders</th><th>Updated</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var c in Model.Collections)
+        {
+          <tr><td><b>@c.Name</b><div class="text-body-secondary small">@c.SourceFileName</div></td>
+            <td style="min-width:240px"><form asp-action="BaseUrl" method="post" class="input-group input-group-sm"><input type="hidden" name="id" value="@c.Id" /><input class="form-control" name="baseUrl" value="@c.BaseUrl" /><button class="btn btn-outline-secondary" title="Save base URL"><i class="bi bi-check2"></i></button></form></td>
+            <td class="text-end">@c.EndpointCount</td><td class="text-end">@c.FolderCount</td><td class="small">@c.UpdatedUtc.ToString("yyyy-MM-dd HH:mm")</td>
+            <td><form asp-action="Deactivate" method="post" data-confirm="Deactivate this collection? Execution history is kept."><input type="hidden" name="id" value="@c.Id" /><button class="btn btn-sm btn-outline-danger" title="Deactivate"><i class="bi bi-archive"></i></button></form></td></tr>
+        }
+        @if (!Model.Collections.Any()) { <tr><td colspan="6" class="text-center text-body-secondary py-4">Nothing imported yet.</td></tr> }
+        </tbody></table></div></div>
+  </div>
+</div>

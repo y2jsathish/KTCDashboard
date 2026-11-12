@@ -1,0 +1,14 @@
+@{ ViewData["Title"] = "History"; }
+<div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+  <div><h1 class="h4 mb-0">Execution history</h1><div class="small text-body-secondary">@(User.IsInRole("Admin") ? "All users" : "Your executions") · bodies and headers are stored masked</div></div>
+  <div class="d-flex gap-2">
+    <select id="fOk" class="form-select form-select-sm"><option value="">All results</option><option value="true">Success</option><option value="false">Failures</option></select>
+    <button class="btn btn-sm btn-primary" id="btnCompare" disabled><i class="bi bi-arrow-left-right"></i> Compare selected (2)</button>
+  </div>
+</div>
+<div class="card"><div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+  <thead><tr><th></th><th>Time</th><th>Method</th><th>URL</th><th>Status</th><th class="text-end">Time</th><th>Source</th><th></th></tr></thead><tbody id="rows"><tr><td colspan="8" class="text-center py-4 text-body-secondary">Loading…</td></tr></tbody></table></div></div>
+<div class="d-flex justify-content-between align-items-center mt-2"><span class="small text-body-secondary" id="pageInfo"></span><div class="btn-group"><button class="btn btn-sm btn-outline-secondary" id="prev">Newer</button><button class="btn btn-sm btn-outline-secondary" id="next">Older</button></div></div>
+<div class="modal fade" id="detailModal" tabindex="-1"><div class="modal-dialog modal-xl modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h2 class="modal-title h5">Execution</h2><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"></div></div></div></div>
+<partial name="_DiffModal" />
+@section Scripts { <script src="~/js/history.js" asp-append-version="true"></script> }

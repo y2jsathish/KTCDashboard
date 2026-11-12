@@ -1,0 +1,12 @@
+@{ ViewData["Title"] = "Library"; }
+<h1 class="h4">My library</h1>
+<ul class="nav nav-tabs mb-3"><li class="nav-item"><button class="nav-link active" data-bs-toggle="tab" data-bs-target="#t-fav">Favorites</button></li><li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#t-recent">Recently used</button></li>
+  <li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#t-tpl">Request templates</button></li><li class="nav-item"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#t-tc">Test cases</button></li></ul>
+<div class="tab-content">
+  <div class="tab-pane fade show active" id="t-fav"><div class="list-group" id="favList"></div></div>
+  <div class="tab-pane fade" id="t-recent"><div class="list-group" id="recentList"></div></div>
+  <div class="tab-pane fade" id="t-tpl"><div class="list-group" id="tplList"></div></div>
+  <div class="tab-pane fade" id="t-tc"><div class="mb-2"><button class="btn btn-sm btn-primary" id="runAll"><i class="bi bi-play-circle"></i> Run all</button></div><div class="list-group" id="tcList"></div></div>
+</div>
+<partial name="_DiffModal" />
+@section Scripts { <script src="~/js/library.js" asp-append-version="true"></script> }

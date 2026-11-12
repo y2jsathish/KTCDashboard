@@ -1,0 +1,16 @@
+@model AuditViewModel
+@{ ViewData["Title"] = "Audit log"; var next = Model.Skip + Model.Take; var prev = Math.Max(0, Model.Skip - Model.Take); }
+<h1 class="h4">Audit log</h1>
+<form class="row g-2 mb-3" method="get"><div class="col-sm-4"><input class="form-control" name="actionName" value="@Model.Action" placeholder="Action contains… (e.g. Api.Execute)" /></div>
+  <div class="col-sm-3"><input class="form-control" name="user" value="@Model.User" placeholder="User contains…" /></div><div class="col-auto"><button class="btn btn-outline-primary">Filter</button></div></form>
+<div class="card"><div class="table-responsive"><table class="table table-sm table-hover align-middle mb-0">
+  <thead><tr><th>Time (UTC)</th><th>User</th><th>Action</th><th>Entity</th><th>Details</th><th>IP</th></tr></thead><tbody>
+  @foreach (var a in Model.Page.Items)
+  {
+    <tr><td class="small text-nowrap">@a.CreatedUtc.ToString("yyyy-MM-dd HH:mm:ss")</td><td>@a.UserName</td><td class="mono">@a.Action</td><td class="small">@a.EntityType @a.EntityId</td><td class="small text-break">@a.Details</td><td class="small">@a.IpAddress</td></tr>
+  }
+  @if (!Model.Page.Items.Any()) { <tr><td colspan="6" class="text-center text-body-secondary py-4">No entries.</td></tr> }
+  </tbody></table></div></div>
+<div class="d-flex justify-content-between align-items-center mt-2"><span class="small text-body-secondary">@Model.Page.Total entries</span>
+  <div class="btn-group"><a class="btn btn-sm btn-outline-secondary @(Model.Skip == 0 ? "disabled" : "")" href="@Url.Action("Audit", new { actionName = Model.Action, user = Model.User, skip = prev, take = Model.Take })">Newer</a>
+  <a class="btn btn-sm btn-outline-secondary @(next >= Model.Page.Total ? "disabled" : "")" href="@Url.Action("Audit", new { actionName = Model.Action, user = Model.User, skip = next, take = Model.Take })">Older</a></div></div>
